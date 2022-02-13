@@ -7,10 +7,38 @@ public class Message {
     public final static int REMOVE_CONTACT = 3;
     public final static int TEXT_MESSAGE = 4;
     public final static int ARCHIVE_MESSAGE = 5;
+    public final static int UPDATE_CONTACTS = 6;
+    public final static int UPDATE_ACCOUNT = 7;
+    public final static int CHECK_CONTACT_STATUS = 8;
     
+    public final static String SUCCESS = "success";
+    public final static String FAIL = "fail";
+
     private int action;
     private String[] inputs;
     private String content;
+    private String usernameSender;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String[] getInputs() {
+        return inputs;
+    }
+
+    public String getUsernameSender() {
+        return usernameSender;
+    }
+
+    public void setUsernameSender(String usernameSender) {
+        this.usernameSender = usernameSender;
+    }
 
     public String getContent() {
         return content;
@@ -19,8 +47,6 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
-    
-    
 
     public int getAction() {
         return action;

@@ -1,12 +1,14 @@
 package Server.Util;
 
 import Server.Controller.Server;
+import Server.Model.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.Callable;
 
 public class Database {
     private Connection connection = null;

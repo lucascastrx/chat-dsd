@@ -6,10 +6,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
+
     private Connection connection;
     private Database db;
 
@@ -17,69 +19,70 @@ public class UserDao {
         connection = Database.getInstance().getConnection();
         db = Database.getInstance();
     }
-    
-    public int insert(String username, String name, String password) throws SQLException{
+
+    public int insert(String name, String username, String password) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("insert into user (username, name, password) values (?, ?, ?)");
         ps.setString(1, username);
         ps.setString(2, name);
         ps.setString(3, Cryptography.md5(password));
-        ps.execute();
+        ps.executeUpdate();
         ps.close();
-        
-        return db.executeQuery("select id from user where username = '" + username + "'").getInt("id");
+        //db.executeQuery("select id from user where username = '" + username + "'").getInt("id")
+        return 0;
     }
-    
-    public void update(String username, String name, String password, int id) throws SQLException{
-        db.executeUpdate("update user set username = '"+ username +"', name = '"+name+"', password = '"+Cryptography.md5(password)+"' where id = "+id);
+
+    public void update(String username, String name, String password, int id) throws SQLException {
+        db.executeUpdate("update user set username = '" + username + "', name = '" + name + "', password = '" + Cryptography.md5(password) + "' where id = " + id);
     }
-    
-    public void delete(int id) throws SQLException{
-        db.executeUpdate("delete from user where id = "+id);
+
+    public void delete(int id) throws SQLException {
+        db.executeUpdate("delete from user where id = " + id);
     }
-    
-    public User getById(int id) throws SQLException{
-        ResultSet result = db.executeQuery("select * from user where id = "+id);
+
+    public User getById(int id) throws SQLException {
+        ResultSet result = db.executeQuery("select * from user where id = " + id);
         if (result.next()) {
             return new User(result.getInt("id"), result.getString("username"), result.getString("name"), true);
         }
         return null;
     }
-    
-    public List<User> getAll() throws SQLException{
+
+    public List<User> getAll() throws SQLException {
         List<User> users = new ArrayList<>();
         ResultSet result = db.executeQuery("select * from user");
-        while (result.next()) {            
+        while (result.next()) {
             users.add(new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
         }
         return users;
     }
-    
-    public List<User> getByUsername(String username) throws SQLException{
+
+    public User getByUsername(String username) throws SQLException {
+        User userR = null;
+        ResultSet result = db.executeQuery("select * from user where username like '%" + username + "%'");
+        while (result.next()) {
+            userR = (new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
+        }
+        return userR;
+    }
+
+    public List<User> getByName(String name) throws SQLException {
         List<User> users = new ArrayList<>();
-        ResultSet result = db.executeQuery("select * from user where username like '%"+ username +"%'");
-        while (result.next()) {            
+        ResultSet result = db.executeQuery("select * from user where name like '%" + name + "%'");
+        while (result.next()) {
             users.add(new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
         }
         return users;
     }
-    
-    public List<User> getByName(String name) throws SQLException{
-        List<User> users = new ArrayList<>();
-        ResultSet result = db.executeQuery("select * from user where name like '%"+ name +"%'");
-        while (result.next()) {            
-            users.add(new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
+
+    public User login(String username, String password) throws SQLException {
+        Statement state = connection.createStatement();
+        ResultSet res = state.executeQuery("select * from user where username = '" + username + "' and password = '" + Cryptography.md5(password) + "'");
+        User u = null;
+        if (res.next()) {
+            u = new User(res.getInt("id"), res.getString("username"), res.getString("name"), true);
         }
-        return users;
+        state.close();
+        return u;
     }
-    
-    public User login(String username, String password) throws SQLException{
-        ResultSet result = db.executeQuery("select * from user where username = '"+username+"' and password = '"+ Cryptography.md5(password) +"'");
-        if (result.next()) {
-            return new User(result.getInt("id"), result.getString("username"), result.getString("name"), true);
-        }
-        return null;
-    }
-    
-    
-    
+
 }

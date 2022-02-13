@@ -1,15 +1,20 @@
 package Client.View;
 
 import Client.Controller.LoginController;
+import Client.Controller.LoginObserved;
+import Client.Controller.LoginObserver;
 
-public class Login extends javax.swing.JFrame {
+import javax.swing.*;
+
+public class Login extends javax.swing.JFrame implements LoginObserver {
     
-    private LoginController controller;
+    private LoginObserved controller;
 
     public Login() {
+        this.controller = new LoginController();
+        this.controller.addObserver(this);
         initComponents();
         setLocationRelativeTo(null);
-        controller = new LoginController(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -130,7 +135,11 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnterActionPerformed
-        //controller.login();
+        if (tfUser.getText().isEmpty() || tfPassword.getText().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane, "Todos os campos obrigatorios.");
+        } else {
+            authenticate();
+        }
     }//GEN-LAST:event_btnEnterActionPerformed
 
     private void btnRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegisterMouseClicked
@@ -184,4 +193,14 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPasswordField tfPassword;
     private javax.swing.JTextField tfUser;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void authenticate() {
+        if (!controller.login(tfUser.getText(), tfPassword.getText())){
+            JOptionPane.showMessageDialog(rootPane, "Não foi possível entrar na conta");
+        } else {
+            new Home();
+            this.dispose();
+        }
+    }
 }

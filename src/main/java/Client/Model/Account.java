@@ -20,6 +20,36 @@ public class Account {
         contactCodes = new ArrayList<>();
         contacts = new ArrayList<>();
     }
+
+    public User getPerson() {
+        return person;
+    }
+
+    public void setPerson(User person) {
+        this.person = person;
+    }
+
+    public List<Integer> getContactCodes() {
+        return contactCodes;
+    }
+
+    public void setContactCodes(List<Integer> contactCodes) {
+        this.contactCodes = contactCodes;
+    }
+
+    public List<User> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<User> contacts) {
+        this.contacts = contacts;
+    }
     
+    public void addContact(User user){
+        this.contacts.add(user);
+    }
     
+    public void removeContact(User user){
+        this.contacts.remove(user);
+    }
 }

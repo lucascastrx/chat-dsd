@@ -1,12 +1,62 @@
 package Client.View;
 
-public class Home extends javax.swing.JFrame {
+import Client.Controller.ActionObserver;
+import Client.Controller.ChatObserved;
+import Client.Controller.Controller;
+import Client.Controller.Observer;
+import java.awt.CardLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+public class Home extends javax.swing.JFrame implements Observer {
+    
+    private ActionObserver controller;
 
     public Home() {
         initComponents();
+        this.controller = Controller.getInstance();
+        this.controller.addObserver(this);
+        this.controller.updateHomeScreen();
+        this.controller.startListener();
+        this.setVisible(true);
+        
         setLocationRelativeTo(null);
-        jpChat.setVisible(false);
+    
+        this.onlineContacts.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent evt){
+                JList list = (JList) evt.getSource();
+                if (evt.getClickCount() == 1) {
+                    int index = list.locationToIndex(evt.getPoint());
+                    controller.clickedList(onlineContacts.getModel().getElementAt(index));
+                }
+            }
+        });
+        
     }
+
+    public JLabel getLbName() {
+        return lbName;
+    }
+
+    public JList<String> getOfflineContacts() {
+        return offlineContacts;
+    }
+
+    public JList<String> getOnlineContacts() {
+        return onlineContacts;
+    }
+
+    
+
+    public JPanel getJpChat() {
+        return jpChat;
+    }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -19,8 +69,6 @@ public class Home extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listContacts = new javax.swing.JList<>();
         jpChat = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         taChat = new javax.swing.JTextArea();
@@ -31,6 +79,11 @@ public class Home extends javax.swing.JFrame {
         lbContactName = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         taMessage = new javax.swing.JTextArea();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        onlineContacts = new javax.swing.JList<>();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        offlineContacts = new javax.swing.JList<>();
         jMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -62,14 +115,6 @@ public class Home extends javax.swing.JFrame {
         jLabel8.setText("v1.0");
 
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/online.png"))); // NOI18N
-
-        listContacts.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        listContacts.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(listContacts);
 
         jpChat.setBackground(new java.awt.Color(255, 255, 255));
         jpChat.setForeground(new java.awt.Color(255, 255, 255));
@@ -149,6 +194,26 @@ public class Home extends javax.swing.JFrame {
                 .addGap(15, 15, 15))
         );
 
+        onlineContacts.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        onlineContacts.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(onlineContacts);
+
+        jTabbedPane1.addTab("Online", jScrollPane1);
+
+        offlineContacts.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        offlineContacts.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(offlineContacts);
+
+        jTabbedPane1.addTab("Offline", jScrollPane4);
+
         jMenu1.setText("File");
         jMenu.add(jMenu1);
 
@@ -165,22 +230,21 @@ public class Home extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane1)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel7)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel9)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(lbName, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lbName, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel8)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel8))
+                    .addComponent(jTabbedPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jpChat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -196,10 +260,10 @@ public class Home extends javax.swing.JFrame {
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel7))
-                .addGap(34, 34, 34)
+                .addGap(32, 32, 32)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
@@ -265,12 +329,52 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPanel jpChat;
     private javax.swing.JLabel lbContactName;
     private javax.swing.JLabel lbName;
     private javax.swing.JLabel lbStatus;
-    private javax.swing.JList<String> listContacts;
+    private javax.swing.JList<String> offlineContacts;
+    private javax.swing.JList<String> onlineContacts;
     private javax.swing.JTextArea taChat;
     private javax.swing.JTextArea taMessage;
     // End of variables declaration//GEN-END:variables
-}
+
+    
+    
+    @Override
+    public void updateName(String name) {
+        this.lbName.setText(name);
+    }
+
+    @Override
+    public void updateOnlineContacts(DefaultListModel list) {
+        this.onlineContacts.setModel(list);
+    }
+
+    @Override
+    public void updateOfflineContacts(DefaultListModel list) {
+        this.offlineContacts.setModel(list);
+    }
+
+    @Override
+    public void addMessageScreen(String message) {
+        JOptionPane.showMessageDialog(rootPane, message);
+    }
+
+    @Override
+    public void addChat(JPanel jp, String id) {
+        this.jpChat.add(jp, id);
+    }
+
+    @Override
+    public void setChatLayout(CardLayout cl) {
+        this.jpChat.setLayout(cl);
+    }
+
+    @Override
+    public void showChat(CardLayout cl, String id) {
+        cl.show(jpChat, id);
+    }
+} 

@@ -55,7 +55,7 @@ public class Server {
         return true;
     }
     
-    public boolean desconnect(){
+    public boolean disconnect(){
         try {
             connection.close();
         } catch (IOException e) {

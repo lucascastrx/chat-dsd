@@ -1,8 +1,17 @@
 package Client.View;
 
-public class Register extends javax.swing.JFrame {
+import Client.Controller.RegisterController;
+import Client.Controller.RegisterObserved;
+import Client.Controller.RegisterObserver;
+import javax.swing.JOptionPane;
 
+public class Register extends javax.swing.JFrame implements RegisterObserver {
+
+    private RegisterObserved controller;
+    
     public Register() {
+        this.controller = new RegisterController();
+        this.controller.addObserver(this);
         initComponents();
         setLocationRelativeTo(null);
     }
@@ -144,12 +153,15 @@ public class Register extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
-        
+        if (tfUser.getText().isEmpty() || tfPassword.getText().isEmpty() || tfName.getText().isEmpty()){
+            JOptionPane.showMessageDialog(rootPane, "Todos os campos obrigatorios.");
+        } else {
+            this.controller.register(tfName.getText(), tfUser.getText(), tfPassword.getText());
+        }
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void btnBackMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBackMouseClicked
-        new Login().setVisible(true);
-        this.dispose();
+        this.controller.back();
     }//GEN-LAST:event_btnBackMouseClicked
 
     /**
@@ -201,4 +213,10 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JPasswordField tfPassword;
     private javax.swing.JTextField tfUser;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void back() {
+        new Login().setVisible(true);
+        this.dispose();
+    }
 }

@@ -60,7 +60,7 @@ public class User {
         this.ip = ip;
     }
 
-    public boolean isIsOnline() {
+    public boolean isOnline() {
         return isOnline;
     }
 

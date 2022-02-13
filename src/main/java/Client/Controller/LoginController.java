@@ -10,14 +10,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 
-public class LoginController {
+public class LoginController implements LoginObserved {
     
     private JFrame loginScreen;
     private Server server;
     private Socket connection;
     private Account account;
+    private List<LoginObserver> observers = new ArrayList<>();
 
     public LoginController(JFrame loginScreen) {
         this.loginScreen = loginScreen;
@@ -27,9 +30,8 @@ public class LoginController {
         server = Server.getInstance();
         account = account.getInstance();
     }
-    
-    
-    
+
+
     public boolean login(String username, String password){
         
         InputStream is = null;
@@ -53,19 +55,22 @@ public class LoginController {
             String response = read(is);
             Message m = gs.fromJson(response, Message.class);
             
-            if (m.getContent().equals("success")) {
-                User u = new User(username, true);
-                
+            if (!m.getStatus().equals(Message.FAIL)) {
+                account.setPerson(gs.fromJson(m.getContent(), User.class));
+            } else {
+                return false;
             }
-            
-            
         } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
         
-        
-        new Home().setVisible(true);
-        loginScreen.dispose();
         return true;
+    }
+
+    @Override
+    public void addObserver(LoginObserver loginObserver) {
+        observers.add(loginObserver);
     }
     
     private String read(InputStream is) throws IOException {
