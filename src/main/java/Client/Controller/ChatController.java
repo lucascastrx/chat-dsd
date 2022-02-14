@@ -23,8 +23,6 @@ public class ChatController implements ChatObserved {
 
     public ChatController() {}
 
-
-
     @Override
     public void addObserver(ChatObserver observer) {
         this.observers.add(observer);
@@ -34,6 +32,17 @@ public class ChatController implements ChatObserved {
     public void nameUser() {
         for (ChatObserver obs : observers){
             obs.updateName(user.getName());
+        }
+    }
+
+    @Override
+    public void setStatus() {
+        for (ChatObserver obs : observers){
+            if (user.isOnline()) {
+                obs.setStatus("online");
+            } else {
+                obs.setStatus("offline");
+            }
         }
     }
 
@@ -63,15 +72,12 @@ public class ChatController implements ChatObserved {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            Gson gson1 = new Gson();
-            Message message1 = gson1.fromJson(message, Message.class);
-            showScreen(message1.getContent());
+            for (ChatObserver obs : observers){
+                obs.updateScreen("Você: " + message);
+            }
         }
     }
 
-    public void showScreen(String msg){
-
-    }
 
     @Override
     public void sendDocument(File file) {

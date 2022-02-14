@@ -1,9 +1,6 @@
 package Server.Controller;
 
-import Server.Model.Contact;
-import Server.Model.ContactDao;
-import Server.Model.Message;
-import Server.Model.UserDao;
+import Server.Model.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
@@ -16,8 +13,7 @@ import java.util.logging.Logger;
 
 public class Transmission extends Thread {
     private Socket conn;
-    private Contact contact;
-
+    private User contact;
     
     public Transmission(Socket conn) throws IOException{
         this.conn = conn;
@@ -41,6 +37,13 @@ public class Transmission extends Thread {
                         break;
                     case Message.LOGIN:
                         msg = operation.login();
+                        if(msg.getStatus().equals(Message.SUCCESS)){
+                            UserDao ud = new UserDao();
+                            this.contact = ud.getByUsername(msg.getInputs()[0]);
+                            this.contact.setIp(conn.getInetAddress().getHostAddress());
+                            this.contact.setIsOnline(true);
+                            Server.connected.add(this);
+                        }
                         break;
                     case Message.ADD_CONTACT:
                         msg = operation.addContact();
@@ -80,7 +83,7 @@ public class Transmission extends Thread {
     }
     
     public void setContactStatus(boolean status){
-        this.contact.getPerson().setIsOnline(status);
+//        this.contact.getPerson().setIsOnline(status);
     }
     
     private void sendMessage(Message msg){
@@ -98,5 +101,13 @@ public class Transmission extends Thread {
         byte[] data = new byte[1024];
         int bytesRead = is.read(data);
         return new String(data, 0, bytesRead);
+    }
+
+    public User getContact() {
+        return contact;
+    }
+
+    public void setContact(User contact) {
+        this.contact = contact;
     }
 }

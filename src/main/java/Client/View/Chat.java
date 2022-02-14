@@ -1,10 +1,14 @@
 package Client.View;
 
+import Client.Controller.ChatController;
 import Client.Controller.ChatObserved;
 import Client.Controller.ChatObserver;
 import Client.Controller.Controller;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
+
+import javax.swing.*;
+import javax.swing.text.DefaultCaret;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Chat extends javax.swing.JPanel implements ChatObserver {
 
@@ -18,8 +22,10 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         this.controller.addObserver(this);
         this.app = app;
         controller.nameUser();
-        
-        
+        controller.setStatus();
+
+        DefaultCaret caret = (DefaultCaret) this.taChat.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
 
     /**
@@ -56,6 +62,11 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 79, 649, 502));
 
         btnSend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/send-button.png"))); // NOI18N
+        btnSend.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnSendMouseClicked(evt);
+            }
+        });
         add(btnSend, new org.netbeans.lib.awtextra.AbsoluteConstraints(622, 593, -1, -1));
 
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/contact.png"))); // NOI18N
@@ -80,10 +91,25 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         taMessage.setRows(2);
         taMessage.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         taMessage.setOpaque(false);
+        taMessage.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                taMessageKeyPressed(evt);
+            }
+        });
         jScrollPane3.setViewportView(taMessage);
 
         add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 593, 595, -1));
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSendMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendMouseClicked
+        this.controller.onSendMessage(this.taMessage.getText());
+    }//GEN-LAST:event_btnSendMouseClicked
+
+    private void taMessageKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taMessageKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            this.controller.onSendMessage(this.taMessage.getText());
+        }
+    }//GEN-LAST:event_taMessageKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -104,9 +130,16 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
     }
 
     @Override
+    public void setStatus(String status) {
+
+        this.lbStatus.setText(status);
+        this.imgStatus.setIcon(new ImageIcon(getClass().getResource("/img/"+status+".png")));
+    }
+
+    @Override
     public void updateScreen(String message) {
         this.taChat.append(message+"\n");
-        this.taMessage.setText("");
+        this.taMessage.setText(null);
     }
 
     public ChatObserved getController() {

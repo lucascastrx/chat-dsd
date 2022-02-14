@@ -3,13 +3,11 @@ package Client.Controller;
 import Client.Model.Message;
 import Client.Model.Server;
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;

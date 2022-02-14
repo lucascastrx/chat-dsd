@@ -36,13 +36,22 @@ public class Receiver extends Thread {
 
     private void textMessage(Message msg) {
         String finalMsg = msg.getUsernameSender() + ": " + msg.getContent();
-        if (!verifyOpenedChat(msg)){
-            controller.clickedList(msg.getUsernameSender());
-            textMessage(msg);
-        } else {
-            Chat chat = controller.getOpenChat(user.getUsername());
-            chat.getTaChat().append(finalMsg + "\n");
+        Chat chat = controller.getChatByUsername(msg.getUsernameSender());
+        if (chat != null){
+            chat.getTaChat().append(finalMsg+"\n");
+        } else{
+            controller.newChatWithMessage(msg.getUsernameSender(), msg.getContent());
         }
+
+//        String finalMsg = msg.getUsernameSender() + ": " + msg.getContent();
+//        if (!verifyOpenedChat(msg)){
+//            controller.clickedList(msg.getUsernameSender());
+//            textMessage(msg);
+//        } else {
+//            Chat chat = controller.getOpenChat(user.getUsername());
+//            chat.getTaChat().append(finalMsg + "\n");
+//        }
+
 
     }
 

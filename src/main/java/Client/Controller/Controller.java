@@ -124,15 +124,13 @@ public class Controller implements ActionObserver {
         return chat;
     }
     
-    public void newChat(String name, String msg){
-        String user = getUsernameByName(name);
+    public void newChatWithMessage(String username, String msg){
         for (User contact : contacts) {
-            if (contact.getUsername().equals(user)) {
+            if (contact.getUsername().equals(username)) {
                 Chat chat = new Chat(new ChatController(contact), this);
                 chat.getTaChat().append(msg);
                 for (Observer observer : observers) {
                     observer.addChat(chat, contact.getUsername());
-                    observer.showChat(contact.getUsername());
                 }
                 openChats.add(chat);
                 break;
@@ -178,6 +176,7 @@ public class Controller implements ActionObserver {
 //            us.setId(Integer.parseInt(m.getInputs()[2]));
 //            account.addContact(us);
 //            updateHomeScreen();
+            updateContactsAccount();
             
         } catch (JsonSyntaxException | IOException | NumberFormatException e) {
             e.printStackTrace();
@@ -268,6 +267,15 @@ public class Controller implements ActionObserver {
             marker++;
         }
         return contacts;
+    }
+    
+    public Chat getChatByUsername(String username){
+        for (Chat chat : openChats){
+            if (chat.getController().getUser().getUsername().equals(username)){
+                return chat;
+            }
+        }
+        return null;
     }
     
     private void updateNameUser(){

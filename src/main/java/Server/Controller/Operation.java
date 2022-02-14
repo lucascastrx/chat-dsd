@@ -84,6 +84,21 @@ public class Operation {
     public Message getUser() throws SQLException {
         User u = user.getByUsername(inputs[0]);
         if (u != null) {
+
+            boolean found = false;
+            for (Transmission tr : Server.connected) {
+                if (tr.getContact().getUsername().equals(u.getUsername())){
+                    if (!tr.getContact().getIp().isEmpty()){
+                        u.setIp(tr.getContact().getIp());
+                        u.setIsOnline(true);
+                        found = true;
+                    }
+                    break;
+                }
+            }
+            if (!found){
+                u.setIsOnline(false);
+            }
             Gson gson = new Gson();
             msg.setContent(gson.toJson(u));
             msg.setStatus(Message.SUCCESS);

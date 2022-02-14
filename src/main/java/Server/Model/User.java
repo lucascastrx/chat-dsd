@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    private String username, name, password;
+    private String username, name, password, ip;
     private int id, idContact;
     private List<Integer> contactCodes = new ArrayList<>();
     private boolean isOnline;
@@ -85,6 +85,12 @@ public class User {
     public String toString() {
         return "Nome de usuario: " + username;
     }
-    
-    
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 }
