@@ -7,27 +7,30 @@ import Client.Model.User;
 import Client.View.Chat;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import java.awt.CardLayout;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Controller implements ActionObserver {
     private static Controller instance;
     private List<Observer> observers = new ArrayList<>();
     private List<User> contacts = new ArrayList<>();
     private Account account;
-    private ArrayList<Chat> openChats = new ArrayList<>(); 
+    private static ArrayList<Chat> openChats = new ArrayList<>(); 
     private DefaultListModel onlineContacts;
     private DefaultListModel offlineContacts;
     private Socket connection = null;
     private Server server;
-    private CardLayout cl;
 
     public static Controller getInstance(){
         if (instance == null){
@@ -44,7 +47,6 @@ public class Controller implements ActionObserver {
         contacts = account.getContacts();
         ServerReceiver receiver = new ServerReceiver(server, this);
         receiver.start();
-        initChat();
     }
 
     @Override
@@ -53,26 +55,57 @@ public class Controller implements ActionObserver {
     }
 
     @Override
-    public void clickedList(String name) {
-        String userS = getUsernameByName(name);
+    public void clickedList(String username) {
+//        String userS = getUsernameByName(name);
         boolean openChat = false;
         if (openChats.size() > 0) {
             for (Chat chat : openChats) {
-                if (chat.getController().getUser().getUsername().equals(userS)) {
+                if (chat.getController().getUser().getUsername().equals(username)) {
                     for (Observer observer : observers) {
-                        observer.showChat(cl, userS);
+                        observer.showChat(username);
+                        break;
                     }
                     openChat = true;
+                    break;
                 }
             }
         }
         if (!openChat) {
             for (User contact : contacts) {
-                if (contact.getUsername().equals(userS)) {
+                if (contact.getUsername().equals(username)) {
+                    
+                    OutputStream os = null;
+                    InputStream is = null;
+
+                    try {
+                        if (server.connect()) {
+                            connection = server.getConnection();
+                            os = connection.getOutputStream();
+                            is = connection.getInputStream();
+                        }
+                        Message msg = new Message();
+                        msg.setAction(Message.GET_USER);
+                        msg.setInputs(username);
+                        Gson gson = new Gson();
+                        String send = gson.toJson(msg);
+                        os.write(send.getBytes());
+
+                        String response = read(is);
+                        System.out.println("GET_USER: "+ response);
+                        Message m = gson.fromJson(response, Message.class);
+
+                        if (m.getStatus().equals(Message.SUCCESS)) {
+                            contact = gson.fromJson(m.getContent(), User.class);
+                        }
+
+                    } catch (JsonSyntaxException | IOException | NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    
                     Chat chat = new Chat(new ChatController(contact), this);
                     for (Observer observer : observers) {
                         observer.addChat(chat, contact.getUsername());
-                        observer.showChat(cl, userS);
+                        observer.showChat(username);
                     }
                     openChats.add(chat);
                     break;
@@ -99,7 +132,7 @@ public class Controller implements ActionObserver {
                 chat.getTaChat().append(msg);
                 for (Observer observer : observers) {
                     observer.addChat(chat, contact.getUsername());
-                    observer.showChat(cl, contact.getUsername());
+                    observer.showChat(contact.getUsername());
                 }
                 openChats.add(chat);
                 break;
@@ -137,18 +170,21 @@ public class Controller implements ActionObserver {
             String response = read(is);
             Message m = gson.fromJson(response, Message.class);
             
-            User us = new User();
-            us.setUsername(username);
-            us.setIsOnline(true);
-            us.setId(Integer.parseInt(m.getInputs()[2]));
-            account.addContact(us);
-            updateHomeScreen();
+            System.out.println(response);
+            
+//            User us = new User();
+//            us.setUsername(username);
+//            us.setIsOnline(true);
+//            us.setId(Integer.parseInt(m.getInputs()[2]));
+//            account.addContact(us);
+//            updateHomeScreen();
             
         } catch (JsonSyntaxException | IOException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
     
+    @Override
     public void removeContact(String username){
         OutputStream os = null;
         InputStream is = null;
@@ -187,6 +223,42 @@ public class Controller implements ActionObserver {
         updateNameUser();
         updateLists(contacts);
     }
+    
+    @Override
+    public void updateContactsAccount(){
+        OutputStream os = null;
+        InputStream is = null;
+        
+        try {
+            if (server.connect()) {
+                connection = server.getConnection();
+                os = connection.getOutputStream();
+                is = connection.getInputStream();
+            }
+            Message msg = new Message();
+            msg.setAction(Message.GET_CONTACTS);
+            msg.setInputs(String.valueOf(account.getPerson().getId()));
+            Gson gson = new Gson();
+            String send = gson.toJson(msg);
+            os.write(send.getBytes());
+            
+            String response = read(is);
+            Message m = gson.fromJson(response, Message.class);
+
+            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+            ArrayList<String> usernames = gson.fromJson(m.getContent(), listType);
+            
+            List<User> users = new ArrayList<>();
+            for (String username : usernames) {
+                users.add(new User(username, true));
+            }
+            this.account.setContacts(users);
+            updateHomeScreen();
+            
+        } catch (JsonSyntaxException | IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<User> getOpenChats() {
         User[] users = new User[openChats.size()];
@@ -207,19 +279,21 @@ public class Controller implements ActionObserver {
     private void updateLists(List<User> list){
         this.account.setContacts(list);
         this.onlineContacts = new DefaultListModel();
-        this.offlineContacts = new DefaultListModel();
+//        this.offlineContacts = new DefaultListModel();
         for (User contact : account.getContacts()) {
             if (contact.isOnline()) {
                 onlineContacts.addElement(contact.getUsername());
             } else {
-                offlineContacts.addElement(contact.getUsername());
+//                offlineContacts.addElement(contact.getUsername());
             }
         }
+        
+        System.out.println(this.contacts.toString());
+        System.out.println(onlineContacts.toString());
         
         // atualizar lista de on e off
         for (Observer observer : observers) {
             observer.updateOnlineContacts(onlineContacts);
-            observer.updateOfflineContacts(offlineContacts);
         }
     }
 
@@ -250,12 +324,6 @@ public class Controller implements ActionObserver {
         return userS;
     }
 
-    private void initChat() {
-        cl = new CardLayout();
-        for (Observer observer : observers) {
-            observer.setChatLayout(cl);
-        }
-    }
     
     private String read(InputStream is) throws IOException {
         byte[] data = new byte[1024];

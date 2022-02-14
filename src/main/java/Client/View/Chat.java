@@ -13,12 +13,13 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
             
     
     public Chat(ChatObserved controller, Controller app) {
+        initComponents();
         this.controller = controller;
         this.controller.addObserver(this);
         this.app = app;
         controller.nameUser();
         
-        initComponents();
+        
     }
 
     /**
@@ -40,6 +41,9 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         jScrollPane3 = new javax.swing.JScrollPane();
         taMessage = new javax.swing.JTextArea();
 
+        setMinimumSize(new java.awt.Dimension(676, 658));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         taChat.setEditable(false);
         taChat.setColumns(20);
         taChat.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -49,20 +53,27 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         taChat.setOpaque(false);
         jScrollPane2.setViewportView(taChat);
 
+        add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 79, 649, 502));
+
         btnSend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/send-button.png"))); // NOI18N
+        add(btnSend, new org.netbeans.lib.awtextra.AbsoluteConstraints(622, 593, -1, -1));
 
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/contact.png"))); // NOI18N
+        add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 16, -1, -1));
 
         lbStatus.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lbStatus.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lbStatus.setText("Online");
+        add(lbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 41, -1, 12));
 
         imgStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/online.png"))); // NOI18N
+        add(imgStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(78, 41, -1, -1));
 
         lbContactName.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lbContactName.setForeground(new java.awt.Color(102, 102, 102));
         lbContactName.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lbContactName.setText("Nome");
+        add(lbContactName, new org.netbeans.lib.awtextra.AbsoluteConstraints(78, 16, 592, 19));
 
         taMessage.setColumns(20);
         taMessage.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -71,49 +82,7 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
         taMessage.setOpaque(false);
         jScrollPane3.setViewportView(taMessage);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jScrollPane3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSend))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(imgStatus)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(lbContactName, javax.swing.GroupLayout.PREFERRED_SIZE, 592, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lbContactName, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(imgStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                    .addComponent(jLabel11))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSend)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15))
-        );
+        add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 593, 595, -1));
     }// </editor-fold>//GEN-END:initComponents
 
 

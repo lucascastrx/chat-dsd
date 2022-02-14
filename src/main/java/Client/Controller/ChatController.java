@@ -33,7 +33,7 @@ public class ChatController implements ChatObserved {
     @Override
     public void nameUser() {
         for (ChatObserver obs : observers){
-            obs.updateName(user.getUsername());
+            obs.updateName(user.getName());
         }
     }
 

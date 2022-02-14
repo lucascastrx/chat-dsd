@@ -10,6 +10,8 @@ public class Message {
     public final static int UPDATE_CONTACTS = 6;
     public final static int UPDATE_ACCOUNT = 7;
     public final static int CHECK_CONTACT_STATUS = 8;
+    public final static int GET_CONTACTS = 9;
+    public final static int GET_USER = 10;
     
     public final static String SUCCESS = "success";
     public final static String FAIL = "fail";

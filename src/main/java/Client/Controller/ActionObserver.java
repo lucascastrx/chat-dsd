@@ -5,6 +5,8 @@ public interface ActionObserver {
     void clickedList(String name);
     void updateData();
     void addContact(String username);
+    void removeContact(String username);
     void updateHomeScreen();
+    void updateContactsAccount();
     void startListener();
 }

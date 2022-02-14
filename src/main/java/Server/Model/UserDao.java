@@ -40,37 +40,53 @@ public class UserDao {
     }
 
     public User getById(int id) throws SQLException {
-        ResultSet result = db.executeQuery("select * from user where id = " + id);
-        if (result.next()) {
-            return new User(result.getInt("id"), result.getString("username"), result.getString("name"), true);
+        
+        User userR = null;
+        Statement state = connection.createStatement();
+        ResultSet res = state.executeQuery("select * from user where id = " + id);
+
+        if (res.next()) {
+            userR = (new User(res.getInt("id"), res.getString("username"), res.getString("name"), true));
         }
-        return null;
+        state.close();
+
+        return userR;
     }
 
     public List<User> getAll() throws SQLException {
         List<User> users = new ArrayList<>();
-        ResultSet result = db.executeQuery("select * from user");
-        while (result.next()) {
-            users.add(new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
+        Statement state = connection.createStatement();
+        ResultSet res = state.executeQuery("select * from user");
+        while (res.next()) {
+            users.add(new User(res.getInt("id"), res.getString("username"), res.getString("name"), true));
         }
+        state.close();
+       
         return users;
     }
 
     public User getByUsername(String username) throws SQLException {
         User userR = null;
-        ResultSet result = db.executeQuery("select * from user where username like '%" + username + "%'");
-        while (result.next()) {
-            userR = (new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
+        
+        Statement state = connection.createStatement();
+        ResultSet res = state.executeQuery("select * from user where username like '%" + username + "%'");
+
+        if (res.next()) {
+            userR = (new User(res.getInt("id"), res.getString("username"), res.getString("name"), true));
         }
+        state.close();
         return userR;
     }
 
     public List<User> getByName(String name) throws SQLException {
         List<User> users = new ArrayList<>();
-        ResultSet result = db.executeQuery("select * from user where name like '%" + name + "%'");
-        while (result.next()) {
-            users.add(new User(result.getInt("id"), result.getString("username"), result.getString("name"), true));
+        Statement state = connection.createStatement();
+        ResultSet res = state.executeQuery("select * from user where name like '%" + name + "%'");
+        while (res.next()) {
+            users.add(new User(res.getInt("id"), res.getString("username"), res.getString("name"), true));
         }
+        state.close();
+        
         return users;
     }
 

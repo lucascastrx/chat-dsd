@@ -3,6 +3,7 @@ package Client.View;
 import Client.Controller.RegisterController;
 import Client.Controller.RegisterObserved;
 import Client.Controller.RegisterObserver;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 public class Register extends javax.swing.JFrame implements RegisterObserver {
@@ -14,6 +15,8 @@ public class Register extends javax.swing.JFrame implements RegisterObserver {
         this.controller.addObserver(this);
         initComponents();
         setLocationRelativeTo(null);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/icon.png"));
+        this.setIconImage(icon.getImage());
     }
 
     @SuppressWarnings("unchecked")

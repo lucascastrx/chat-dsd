@@ -19,8 +19,7 @@ public class Transmission extends Thread {
     private Contact contact;
 
     
-    public Transmission(Socket conn){
-        
+    public Transmission(Socket conn) throws IOException{
         this.conn = conn;
     }
     
@@ -55,6 +54,11 @@ public class Transmission extends Thread {
                     case Message.CHECK_CONTACT_STATUS:
                         msg = operation.checkContactStatus();
                         break;
+                    case Message.GET_CONTACTS:
+                        msg = operation.getContacts();
+                        break;
+                    case Message.GET_USER:
+                        msg = operation.getUser();
                     }
                     sendMessage(msg);
                 } catch (SQLException ex) {

@@ -6,6 +6,8 @@ import Server.Model.User;
 import Server.Model.UserDao;
 import com.google.gson.Gson;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Operation {
 
@@ -60,5 +62,35 @@ public class Operation {
 
     public Message checkContactStatus() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    
+    public Message getContacts() throws SQLException {
+        Gson gson = new Gson();
+        List<User> users = contact.getByPersonId(Integer.parseInt(inputs[0]));
+        List<String> usersString = new ArrayList<>();
+        for (User user1 : users) {
+            if (!usersString.contains(user1.getUsername())) {
+                usersString.add(user1.getUsername());
+            }
+        }
+        msg.setContent(gson.toJson(usersString));
+        msg.setStatus(Message.SUCCESS);
+        System.out.println(msg.getContent());
+        return msg;
+    }
+
+    public Message getUser() throws SQLException {
+        User u = user.getByUsername(inputs[0]);
+        if (u != null) {
+            Gson gson = new Gson();
+            msg.setContent(gson.toJson(u));
+            msg.setStatus(Message.SUCCESS);
+        } else {
+            msg.setStatus(Message.FAIL);
+            msg.setContent("");
+        }
+        return msg;
     }
 }

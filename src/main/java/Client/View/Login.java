@@ -15,6 +15,8 @@ public class Login extends javax.swing.JFrame implements LoginObserver {
         this.controller.addObserver(this);
         initComponents();
         setLocationRelativeTo(null);
+        ImageIcon icon = new ImageIcon(getClass().getResource("/img/icon.png"));
+        this.setIconImage(icon.getImage());
     }
 
     @SuppressWarnings("unchecked")
