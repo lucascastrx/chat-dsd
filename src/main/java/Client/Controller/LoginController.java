@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class LoginController implements LoginObserved {
     
@@ -58,6 +59,9 @@ public class LoginController implements LoginObserved {
             if (!m.getStatus().equals(Message.FAIL)) {
                 account.setPerson(gs.fromJson(m.getContent(), User.class));
             } else {
+                if (!m.getContent().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, m.getContent());
+                }
                 return false;
             }
         } catch (Exception e) {

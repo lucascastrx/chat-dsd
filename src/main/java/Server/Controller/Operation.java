@@ -46,25 +46,38 @@ public class Operation {
     }
 
     public Message addContact() throws SQLException {
-        int idFriend = user.getByUsername(inputs[0]).getId();
+        User friend = user.getByUsername(inputs[0]);
+        if (friend == null) {
+            msg.setStatus(Message.FAIL);
+            msg.setContent("O usuario nao existe.");
+            return msg;
+        }
+        if (inputs[0].equals(inputs[1])) {
+            msg.setStatus(Message.FAIL);
+            msg.setContent("Voce nao pode adicionar a si mesmo");
+            return msg;
+        }
         int idPerson = user.getByUsername(inputs[1]).getId();
-        contact.insert(idPerson, idFriend);
+        contact.insert(idPerson, friend.getId());
         return msg;
     }
 
     public Message removeContact() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        User friend = user.getByUsername(inputs[0]);
+        if (friend == null) {
+            msg.setStatus(Message.FAIL);
+            msg.setContent("O usuario nao existe.");
+            return msg;
+        }
+        if (inputs[0].equals(inputs[1])) {
+            msg.setStatus(Message.FAIL);
+            msg.setContent("Voce nao pode remover a si mesmo");
+            return msg;
+        }
+        int idPerson = user.getByUsername(inputs[1]).getId();
+        contact.delete(idPerson, friend.getId());
+        return msg;
     }
-
-    public Message updateAccount() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public Message checkContactStatus() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
     
     public Message getContacts() throws SQLException {
         Gson gson = new Gson();

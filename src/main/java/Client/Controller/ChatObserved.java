@@ -10,8 +10,6 @@ public interface ChatObserved {
     void nameUser();
     void setStatus();
     User getUser();
-    void onClose();
     void onSendMessage(String message);
-    void sendDocument(File file);
     Account getAccount();
 }

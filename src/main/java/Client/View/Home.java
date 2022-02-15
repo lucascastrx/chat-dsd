@@ -74,6 +74,7 @@ public class Home extends javax.swing.JFrame implements Observer {
         onlineContacts = new javax.swing.JList<>();
         jLabel9 = new javax.swing.JLabel();
         jpChat = new javax.swing.JPanel();
+        btnReloadList = new javax.swing.JButton();
         jMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         miAddContact = new javax.swing.JMenuItem();
@@ -131,6 +132,13 @@ public class Home extends javax.swing.JFrame implements Observer {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        btnReloadList.setText("Recarregar");
+        btnReloadList.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReloadListActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText("Contatos");
 
         miAddContact.setText("Adicionar");
@@ -166,7 +174,10 @@ public class Home extends javax.swing.JFrame implements Observer {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnReloadList))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -179,7 +190,8 @@ public class Home extends javax.swing.JFrame implements Observer {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)))))
+                                .addComponent(jLabel8)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jpChat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
@@ -199,11 +211,13 @@ public class Home extends javax.swing.JFrame implements Observer {
                                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(jLabel7))
-                        .addGap(32, 32, 32)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnReloadList))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel8))))
@@ -220,6 +234,11 @@ public class Home extends javax.swing.JFrame implements Observer {
     private void miRemoveContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRemoveContactActionPerformed
         controller.removeContact(JOptionPane.showInputDialog("Informe o username do contato:"));
     }//GEN-LAST:event_miRemoveContactActionPerformed
+
+    private void btnReloadListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReloadListActionPerformed
+        controller.updateContactsAccount();
+        controller.updateHomeScreen();
+    }//GEN-LAST:event_btnReloadListActionPerformed
 
     /**
      * @param args the command line arguments
@@ -260,6 +279,7 @@ public class Home extends javax.swing.JFrame implements Observer {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnReloadList;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;

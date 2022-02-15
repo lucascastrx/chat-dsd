@@ -1,9 +1,14 @@
 package Client.Model;
 
 import com.google.gson.Gson;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server {
     private static Server instance;
@@ -11,6 +16,7 @@ public class Server {
     private int port;
     private Socket connection;
     private ObjectOutputStream os;
+    private String ADDRESS = "127.0.0.1";
     
     public static Server getInstance(){
         if (instance == null) {
@@ -20,7 +26,14 @@ public class Server {
     }
     
     private Server(){
-        this.address = "localhost";
+        try {
+            ipconfig();
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.address = ADDRESS;
         this.port = 50000;
     }
 
@@ -74,6 +87,11 @@ public class Server {
 
     public Socket getConnection() {
         return connection;
+    }
+    
+    private void ipconfig() throws IOException, URISyntaxException {
+        File arq = new File("ip.txt");
+        ADDRESS = new String(Files.readAllBytes(arq.toPath()));
     }
     
     

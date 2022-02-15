@@ -6,10 +6,7 @@ public class Message {
     public final static int ADD_CONTACT = 2;
     public final static int REMOVE_CONTACT = 3;
     public final static int TEXT_MESSAGE = 4;
-    public final static int ARCHIVE_MESSAGE = 5;
     public final static int UPDATE_CONTACTS = 6;
-    public final static int UPDATE_ACCOUNT = 7;
-    public final static int CHECK_CONTACT_STATUS = 8;
     public final static int GET_CONTACTS = 9;
     public final static int GET_USER = 10;
     

@@ -4,8 +4,6 @@ import Client.Model.Account;
 import Client.Model.Message;
 import Client.Model.User;
 import com.google.gson.Gson;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +50,6 @@ public class ChatController implements ChatObserved {
     }
 
     @Override
-    public void onClose() {
-
-    }
-
-    @Override
     public void onSendMessage(String message) {
         Message msg = new Message();
         msg.setAction(Message.TEXT_MESSAGE);
@@ -76,12 +69,6 @@ public class ChatController implements ChatObserved {
                 obs.updateScreen("Você: " + message);
             }
         }
-    }
-
-
-    @Override
-    public void sendDocument(File file) {
-
     }
 
     @Override

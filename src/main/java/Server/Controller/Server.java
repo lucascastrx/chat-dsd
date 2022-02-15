@@ -1,8 +1,10 @@
 package Server.Controller;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
@@ -35,37 +37,31 @@ public class Server extends Thread {
         }
     }
     
-    public void updateConnected(){
-        connected.stream().map((x)->{
-            if (x.getConn().isClosed()) {
-                x.setContactStatus(false);
-            }
-            return x;
-        });
-        updateConnected();
-    }
 
     private void initTasks(){
         (new Thread(() -> {
             new Timer().schedule(
                     new TimerTask() {
                         @Override
-                        public void run() {
-                            connected.stream().map((x)->{
-                                if (x.getConn().isClosed()) {
-                                    x.setContact(null);
+                        public void run() {                            
+                            Iterator<Transmission> iterator = Server.connected.listIterator();
+                            while (iterator.hasNext()){
+                                boolean alive = false;
+                                Transmission tr = iterator.next();
+                                try {
+                                    Socket socket = new Socket();
+                                    SocketAddress socketAddress = new InetSocketAddress(tr.getContact().getIp(), 50002);
+                                    socket.connect(socketAddress);
+                                    socket.close();
+                                    alive = true;
+                                } catch (IOException ex) {
                                 }
-                                return x;
-                            });
-//                            Iterator<Transmission> iterator = Server.connected.listIterator();
-//                            while (iterator.hasNext()){
-//                                Transmission tr = iterator.next();
-//                                if (tr.getConn().isClosed()){
-//                                    tr.setContact(null);
-//                                    tr.stop();
-//                                    iterator.remove();
-//                                }
-//                            }
+                                if (!alive) {
+                                    tr.setContact(null);
+                                    tr.stop();
+                                    iterator.remove();
+                                }
+                            }
 //                            Server.connected.removeIf(tr -> tr.getConn().isClosed());
                             System.out.println("Executou task");
                             System.out.println(Server.connected.toString());

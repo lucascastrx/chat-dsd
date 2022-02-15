@@ -102,12 +102,16 @@ public class Chat extends javax.swing.JPanel implements ChatObserver {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSendMouseClicked
-        this.controller.onSendMessage(this.taMessage.getText());
+        if (!taMessage.getText().isEmpty()) {
+            this.controller.onSendMessage(this.taMessage.getText());
+        }
     }//GEN-LAST:event_btnSendMouseClicked
 
     private void taMessageKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_taMessageKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
-            this.controller.onSendMessage(this.taMessage.getText());
+        if (!taMessage.getText().isEmpty()) {
+            if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+                this.controller.onSendMessage(this.taMessage.getText());
+            }
         }
     }//GEN-LAST:event_taMessageKeyPressed
 

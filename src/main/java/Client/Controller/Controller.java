@@ -8,7 +8,6 @@ import Client.View.Chat;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import java.awt.CardLayout;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -18,8 +17,6 @@ import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Controller implements ActionObserver {
     private static Controller instance;
@@ -28,7 +25,6 @@ public class Controller implements ActionObserver {
     private Account account;
     private static ArrayList<Chat> openChats = new ArrayList<>(); 
     private DefaultListModel onlineContacts;
-    private DefaultListModel offlineContacts;
     private Socket connection = null;
     private Server server;
 
@@ -56,7 +52,6 @@ public class Controller implements ActionObserver {
 
     @Override
     public void clickedList(String username) {
-//        String userS = getUsernameByName(name);
         boolean openChat = false;
         if (openChats.size() > 0) {
             for (Chat chat : openChats) {
@@ -127,7 +122,42 @@ public class Controller implements ActionObserver {
     public void newChatWithMessage(String username, String msg){
         for (User contact : contacts) {
             if (contact.getUsername().equals(username)) {
-                Chat chat = new Chat(new ChatController(contact), this);
+                User contactServer = null;
+                try {
+                    OutputStream os = null;
+                    InputStream is = null;
+                    
+                    if (server.connect()) {
+                        connection = server.getConnection();
+                        os = connection.getOutputStream();
+                        is = connection.getInputStream();
+                    }
+                    Message msg2 = new Message();
+                    msg2.setAction(Message.GET_USER);
+                    msg2.setInputs(username);
+                    Gson gson = new Gson();
+                    String send = gson.toJson(msg);
+                    os.write(send.getBytes());
+
+                    String response = read(is);
+                    System.out.println("GET_USER: "+ response);
+                    Message m = gson.fromJson(response, Message.class);
+
+                    if (m.getStatus().equals(Message.SUCCESS)) {
+                        contactServer = gson.fromJson(m.getContent(), User.class);
+                        contacts.remove(contact);
+                        contacts.add(contactServer);
+                    }
+
+                } catch (JsonSyntaxException | IOException | NumberFormatException e) {
+                    e.printStackTrace();
+                }
+                Chat chat = null;
+                if (contactServer != null) {
+                    chat = new Chat(new ChatController(contactServer), this);
+                } else {
+                    chat = new Chat(new ChatController(contact), this);
+                }
                 chat.getTaChat().append(msg);
                 for (Observer observer : observers) {
                     observer.addChat(chat, contact.getUsername());
@@ -170,12 +200,10 @@ public class Controller implements ActionObserver {
             
             System.out.println(response);
             
-//            User us = new User();
-//            us.setUsername(username);
-//            us.setIsOnline(true);
-//            us.setId(Integer.parseInt(m.getInputs()[2]));
-//            account.addContact(us);
-//            updateHomeScreen();
+            if (m.getStatus().equals(Message.FAIL)) {
+                messageScreen(m.getContent());
+            }
+            
             updateContactsAccount();
             
         } catch (JsonSyntaxException | IOException | NumberFormatException e) {
@@ -204,12 +232,11 @@ public class Controller implements ActionObserver {
             String response = read(is);
             Message m = gson.fromJson(response, Message.class);
             
-            User us = new User();
-            us.setUsername(username);
-            us.setIsOnline(true);
-            us.setId(Integer.parseInt(m.getInputs()[2]));
-            account.removeContact(us);
-            updateHomeScreen();
+            if (m.getStatus().equals(Message.FAIL)) {
+                messageScreen(m.getContent());
+            }
+            
+            updateContactsAccount();
             
         } catch (JsonSyntaxException | IOException | NumberFormatException e) {
             e.printStackTrace();
@@ -227,7 +254,7 @@ public class Controller implements ActionObserver {
     public void updateContactsAccount(){
         OutputStream os = null;
         InputStream is = null;
-        
+        openChats.clear();
         try {
             if (server.connect()) {
                 connection = server.getConnection();

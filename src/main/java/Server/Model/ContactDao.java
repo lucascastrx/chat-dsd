@@ -39,6 +39,7 @@ public class ContactDao {
     
     public void delete(int idPerson, int idFriend) throws SQLException{
         db.executeUpdate("delete from contact where person_id = "+idPerson+" and friend_id = " + idFriend);
+        db.executeUpdate("delete from contact where person_id = "+idFriend+" and friend_id = " + idPerson);
     }
     
     public Contact getById(int id) throws SQLException{

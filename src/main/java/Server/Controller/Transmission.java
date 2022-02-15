@@ -38,11 +38,22 @@ public class Transmission extends Thread {
                     case Message.LOGIN:
                         msg = operation.login();
                         if(msg.getStatus().equals(Message.SUCCESS)){
-                            UserDao ud = new UserDao();
-                            this.contact = ud.getByUsername(msg.getInputs()[0]);
-                            this.contact.setIp(conn.getInetAddress().getHostAddress());
-                            this.contact.setIsOnline(true);
-                            Server.connected.add(this);
+                            boolean userOnline = false;
+                            for (Transmission transmission : Server.connected) {
+                                if (transmission.getContact().getUsername().equals(msg.getInputs()[0])) {
+                                    userOnline = true;
+                                    msg.setStatus(Message.FAIL);
+                                    msg.setContent("Outra sessao esta ativa.\n Encerre e aguarde 15 segundos para tentar novamente.");
+                                    break;
+                                }
+                            }
+                            if (!userOnline) {
+                                UserDao ud = new UserDao();
+                                this.contact = ud.getByUsername(msg.getInputs()[0]);
+                                this.contact.setIp(conn.getInetAddress().getHostAddress());
+                                this.contact.setIsOnline(true);
+                                Server.connected.add(this);
+                            }
                         }
                         break;
                     case Message.ADD_CONTACT:
@@ -50,12 +61,6 @@ public class Transmission extends Thread {
                         break;
                     case Message.REMOVE_CONTACT:
                         msg = operation.removeContact();
-                        break;
-                    case Message.UPDATE_ACCOUNT:
-                        msg = operation.updateAccount();
-                        break;
-                    case Message.CHECK_CONTACT_STATUS:
-                        msg = operation.checkContactStatus();
                         break;
                     case Message.GET_CONTACTS:
                         msg = operation.getContacts();
@@ -67,7 +72,7 @@ public class Transmission extends Thread {
                 } catch (SQLException ex) {
                     Logger.getLogger(Transmission.class.getName()).log(Level.SEVERE, null, ex);
                     msg.setStatus(Message.FAIL);
-                    msg.setContent("O nome de usuario deve ser unico.");
+                    msg.setContent("Nome de usuario ja existente.");
                     sendMessage(msg);
                     System.err.println(ex);
                 }
@@ -78,13 +83,13 @@ public class Transmission extends Thread {
         }
     }
 
-    public Socket getConn() {
-        return conn;
-    }
+//    public Socket getConn() {
+//        return conn;
+//    }
     
-    public void setContactStatus(boolean status){
+//    public void setContactStatus(boolean status){
 //        this.contact.getPerson().setIsOnline(status);
-    }
+//    }
     
     private void sendMessage(Message msg){
         try {
