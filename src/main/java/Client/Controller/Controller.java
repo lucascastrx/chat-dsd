@@ -16,7 +16,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimerTask;
 
 public class Controller implements ActionObserver {
     private static Controller instance;
@@ -24,6 +27,7 @@ public class Controller implements ActionObserver {
     private List<User> contacts = new ArrayList<>();
     private Account account;
     private static ArrayList<Chat> openChats = new ArrayList<>(); 
+    private static Map<String, Chat> backupMessages = new HashMap<>();
     private DefaultListModel onlineContacts;
     private Socket connection = null;
     private Server server;
@@ -36,13 +40,12 @@ public class Controller implements ActionObserver {
     }
 
     private Controller(){
+//        initTasks();
         account = Account.getInstance();
         account.getPerson().setIsOnline(true);
         server = Server.getInstance();
         connection = server.getConnection();
         contacts = account.getContacts();
-        ServerReceiver receiver = new ServerReceiver(server, this);
-        receiver.start();
     }
 
     @Override
@@ -98,6 +101,10 @@ public class Controller implements ActionObserver {
                     }
                     
                     Chat chat = new Chat(new ChatController(contact), this);
+                    if (backupMessages.containsKey(contact.getUsername())) {
+                        chat.getTaChat().setText(backupMessages.get(contact.getUsername()).getTaChat().getText());
+                    }
+                    
                     for (Observer observer : observers) {
                         observer.addChat(chat, contact.getUsername());
                         observer.showChat(username);
@@ -120,6 +127,7 @@ public class Controller implements ActionObserver {
     }
     
     public void newChatWithMessage(String username, String msg){
+        this.updateContactsAccount();
         for (User contact : contacts) {
             if (contact.getUsername().equals(username)) {
                 User contactServer = null;
@@ -136,7 +144,7 @@ public class Controller implements ActionObserver {
                     msg2.setAction(Message.GET_USER);
                     msg2.setInputs(username);
                     Gson gson = new Gson();
-                    String send = gson.toJson(msg);
+                    String send = gson.toJson(msg2);
                     os.write(send.getBytes());
 
                     String response = read(is);
@@ -172,10 +180,6 @@ public class Controller implements ActionObserver {
         this.openChats.remove(chat);
     }
 
-    @Override
-    public void updateData() {
-
-    }
 
     @Override
     public void addContact(String username) {
@@ -254,6 +258,13 @@ public class Controller implements ActionObserver {
     public void updateContactsAccount(){
         OutputStream os = null;
         InputStream is = null;
+        
+        backupMessages.clear();
+        
+        for (Chat openChat : openChats) {
+            backupMessages.put(openChat.getController().getUser().getUsername(), openChat);
+        }
+        
         openChats.clear();
         try {
             if (server.connect()) {
@@ -365,4 +376,18 @@ public class Controller implements ActionObserver {
         int bytesRead = is.read(data);
         return new String(data, 0, bytesRead);
     }
+    
+    private void initTasks(){
+        (new Thread(() -> {
+            new java.util.Timer().schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {                            
+                            Controller.getInstance().updateContactsAccount();
+                        }
+                    }, 5000, 5000
+            );
+        })).start();
+    }
+
 }

@@ -40,18 +40,8 @@ public class Receiver extends Thread {
         if (chat != null){
             chat.getTaChat().append(finalMsg+"\n");
         } else{
-            controller.newChatWithMessage(msg.getUsernameSender(), msg.getContent());
+            controller.newChatWithMessage(msg.getUsernameSender(), finalMsg+"\n");
         }
-
-//        String finalMsg = msg.getUsernameSender() + ": " + msg.getContent();
-//        if (!verifyOpenedChat(msg)){
-//            controller.clickedList(msg.getUsernameSender());
-//            textMessage(msg);
-//        } else {
-//            Chat chat = controller.getOpenChat(user.getUsername());
-//            chat.getTaChat().append(finalMsg + "\n");
-//        }
-
 
     }
 
